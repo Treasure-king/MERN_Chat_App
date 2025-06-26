@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const useGetConversation = () => {
-    const [loading,setLoading]= useState(false)
-    const [conversations,setConversations] = useState([])
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false)
+    const [conversations, setConversations] = useState([])
 
-    useEffect(()=>{
-        const getConversations = async()=>{
+    useEffect(() => {
+        const getConversations = async () => {
             setLoading(true)
             try {
-                const res = await fetch('/api/users')
-                const data= await res.json()
+                const res = await fetch('/api/users', {
+                    method: 'GET',
+                    credentials: 'include', // 🔥 This tells browser to send cookies (like jwt)
+                });
 
-                if(data.error){
+                const data = await res.json()
+
+                if (data.error) {
                     throw new Error(data.error)
                 }
                 setConversations(data)
 
             } catch (error) {
-                console.log("error:- ",error.message)
+                console.log("error:- ", error.message)
             }
-            finally{
+            finally {
                 setLoading(false)
             }
         }
 
         getConversations();
-    },[])
+    }, [])
 
-    return {loading,conversations}
+    return { loading, conversations }
 }
 
 export default useGetConversation
